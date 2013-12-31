@@ -1,0 +1,108 @@
+XOR EBX, EBX;
+PUSH EBX;
+MOV ECX, ESP;
+LEA EDX, [EBX + 2];
+LEA EAX, [EBX + 3];
+INT 128;
+
+POP ECX;
+SUB ECX, '00';
+CMP ECX, EBX;
+MOVZX EDX, CH;
+MOVZX ECX, CL;
+
+JLE @sdgt;
+  LEA ECX, [ECX + ECX*4];
+  LEA ECX, [EDX + ECX*2];
+@sdgt:
+
+LEA EAX, [EBX + 1];
+LEA ESI, [EBX - 1];
+MOV EBP, EBX;
+SHL EAX, CL;
+
+PUSH EBX;
+PUSH EBX;
+PUSH EBX;
+PUSH EBX;
+
+DEC EAX;
+MOV EDI, ESI;
+MOV ECX, EAX;
+JMP @fall;
+
+ALIGN 4;
+@rise:
+  LEA EDX, [ECX - 1];
+  NOT ECX;
+  XOR EDX, ECX;
+  OR ECX, EDX;
+
+  PUSH EDI;  <--  E
+  PUSH ESI;  <--  L
+  PUSH EAX;  <--  V
+  PUSH EDX;  <--  N
+
+  AND EAX, ECX;
+  AND ESI, ECX;
+  AND EDI, ECX;
+
+  LEA ESI, [ESI + ESI + 1];
+  SAR EDI, 1;
+  MOV ECX, EAX;
+
+ALIGN 4;
+@fall:
+  AND ECX, ESI;
+  AND ECX, EDI;
+JNE @rise;
+
+  CMP EAX, 1;
+  ADC EBP, 0;
+
+  POP ECX;   <--  N
+  POP EAX;   <--  V
+  POP ESI;   <--  L
+  POP EDI;   <--  E
+
+  ADC EBX, 0;
+  AND ECX, EAX;
+  TEST EDI, EDI;
+JNE @fall;
+
+MOV EAX, EBP;
+MOV EDX, EBX;
+MOV ECX, 1000000000;
+DIV ECX;
+MOV EBX, EAX;
+MOV EAX, EDX;
+LEA ECX, [EDI + 10];
+PUSH ECX;
+
+@itoa:
+  XOR EDX, EDX;
+  DIV ECX;
+  ADD EDX, '0';
+  PUSH EDX;
+  TEST EAX, EAX;
+JNE @itoa;
+
+  MOV EAX, EBX;
+  TEST EBX, EBX;
+  MOV EBX, EDI;
+JNE @itoa;
+
+INC EBX;
+MOV EDX, EBX;
+
+@outp:
+  MOV ECX, ESP;
+  LEA EAX, [EBX + 3];
+  INT 128;
+  POP EAX;
+  CMP EAX, '0';
+JGE @outp;
+
+MOV EAX, EBX;
+DEC EBX;
+INT 128;
