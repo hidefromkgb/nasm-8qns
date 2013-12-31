@@ -5,7 +5,7 @@ A short x86 assembly program for solving generalized 8-queens puzzle.<br>
 Compatible with Linux ≥ 2.6.
 
 Input:
- - none, but you can change FLD_SIZE to the desired value and recompile
+ - one- or two-digit board size
 
 Output:
- - the total number of distinct solutions for a FLD_SIZE × FLD_SIZE board
+ - the total number of distinct solutions for a given size
